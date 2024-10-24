@@ -3,168 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contributions Page</title>
+    <title>Charmify Coding Challenges</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            color: #2c3e50;
         }
-        .container {
-            width: 80%;
-            margin: 0 auto;
-            padding: 20px;
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            position: relative;
         }
         h1 {
-            text-align: center;
+            margin: 0;
         }
-        .contribution-form {
-            background-color: #f2f2f2;
+        .container {
             padding: 20px;
-            border-radius: 8px;
         }
-        .contribution-card {
-            background-color: #e7e7e7;
+        .challenge-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        .challenge-card:hover {
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+        .challenge-card h3 {
+            margin-top: 0;
+        }
+        .sign-in-btn {
+            display: block;
+            width: 250px;
+            margin: 20px auto;
             padding: 15px;
-            margin-bottom: 20px;
+            text-align: center;
+            background-color: #7289da;
+            color: white;
+            text-decoration: none;
             border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
         }
-        pre {
-            background-color: #333;
-            color: #fff;
-            padding: 10px;
+        .sign-in-btn:hover {
+            background-color: #5865f2;
+        }
+        .profile-pic {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: none;
+            border: 2px solid #7289da;
+        }
+        .username {
+            position: absolute;
+            top: 12px;
+            right: 70px;
+            color: white;
+            font-weight: bold;
+        }
+        .search-bar {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
             border-radius: 5px;
+            font-size: 16px;
+        }
+        .contribute-form {
+            display: none;
+            background-color: white;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        button {
+            padding: 12px 20px;
+            background-color: #7289da;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #5865f2;
         }
     </style>
 </head>
 <body>
 
+<header>
+    <h1>Charmify Coding Challenges</h1>
+    <span class="username" id="username"></span>
+    <img src="" id="profile-pic" class="profile-pic" alt="Profile Picture">
+</header>
+
 <div class="container">
-    <h1>Contribute Your Ideas</h1>
 
-    <div class="contribution-form">
-        <h2>Submit Your Contribution</h2>
-        <form id="contributionForm">
-            <label for="title">Title:</label><br>
-            <input type="text" id="title" name="title" required><br><br>
+    <!-- Discord Login Button -->
+    <a class="sign-in-btn" id="sign-in-btn" href="https://discord.com/api/oauth2/authorize?client_id=1298942705463722037&redirect_uri=https://charm-master.github.io/Charmify&response_type=token&scope=identify">
+        Sign in with Discord
+    </a>
 
-            <label for="description">Description:</label><br>
-            <textarea id="description" name="description" required></textarea><br><br>
+    <!-- Search Bar -->
+    <input type="text" class="search-bar" id="search-bar" placeholder="Search for challenges...">
 
-            <label for="code">Code (optional):</label><br>
-            <textarea id="code" name="code"></textarea><br><br>
-
-            <button type="submit">Submit</button>
-        </form>
+    <!-- Challenges List -->
+    <div id="challenges-container">
+        <div class="challenge-card" data-id="1">
+            <h3>Challenge 1: Build a Website</h3>
+            <p>Create a simple HTML and CSS website that has at least 3 pages and a navigation bar.</p>
+        </div>
+        <div class="challenge-card" data-id="2">
+            <h3>Challenge 2: JavaScript Calculator</h3>
+            <p>Build a basic calculator using HTML, CSS, and JavaScript. It should support addition, subtraction, multiplication, and division.</p>
+        </div>
     </div>
 
-    <h2>Verified Contributions</h2>
-    <div id="contributions-container">
-        <!-- Contributions will be dynamically loaded here -->
+    <!-- Contribute Form -->
+    <div class="contribute-form" id="contribute-form">
+        <h2>Contribute to Challenge</h2>
+        <input type="text" id="contribute-title" placeholder="Title">
+        <textarea id="contribute-description" placeholder="Description"></textarea>
+        <textarea id="contribute-code" placeholder="Add your code here..."></textarea>
+        <button id="submit-contribution">Submit</button>
     </div>
+
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
 <script>
-// Webhook URL to send contributions to Discord
-const webhookUrl = 'YOUR_DISCORD_WEBHOOK_URL';
+    // Encryption Key (keep this secret and safe)
+    const encryptionKey = "wZx2AjL2DdHtb62Ej7YVf5Q0W3WBTRLV5FB76Z2XKHA=";
 
-// Function to send contribution to Discord via webhook
-async function sendContribution(title, description, code) {
-    const payload = {
-        embeds: [
-            {
-                title: title,
-                description: description,
-                fields: code ? [{ name: 'Code', value: `\`\`\`${code}\`\`\`` }] : [],
-                color: 3447003
-            }
-        ]
-    };
+    // Encrypted Webhook URL (Base64 encoded string)
+    const encryptedWebhookUrl = "b'gAAAAABnGh2HVF_hfzNtYJp07ZSK3rjG3GfJl9NjepLBy1OGlyg9b0dVCrsJsZ96Nard0OVC7DbEiowCaThFsmVGvDpZlOL9U494hWHoi_si1Jd1ijzKN-P83diuHIovMxvt9UF_b527U1j6Ee5L7tR3-w7LAdftQ-OX4iCZyhdzWMRzgYd8csF5q9ZxAj2WhA62xxO4ZmUaLniqEphiYlR4xm-kk2HvowDdu6ffOe-F-pfh_WpHjlo='";
 
-    try {
-        const response = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload)
-        });
-
-        if (response.ok) {
-            alert('Contribution submitted successfully!');
-        } else {
-            alert('Error submitting contribution.');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Error submitting contribution.');
+    // Decrypting the Webhook URL
+    function decryptWebhookUrl(encryptedUrl) {
+        const decrypted = CryptoJS.AES.decrypt(atob(encryptedUrl), encryptionKey);
+        return decrypted.toString(CryptoJS.enc.Utf8);
     }
-}
 
-// Handle form submission
-document.getElementById('contributionForm').addEventListener('submit', async (event) => {
-    event.preventDefault();
+    // Event listener for search bar
+    document.getElementById('search-bar').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const challenges = document.getElementsByClassName('challenge-card');
 
-    const title = document.getElementById('title').value;
-    const description = document.getElementById('description').value;
-    const code = document.getElementById('code').value;
-
-    // Send contribution to Discord
-    await sendContribution(title, description, code);
-
-    // Clear form fields
-    document.getElementById('contributionForm').reset();
-});
-
-// Discord bot token and channel ID
-const botToken = 'YOUR_DISCORD_BOT_TOKEN';
-const channelId = 'YOUR_DISCORD_CHANNEL_ID';
-
-// Function to fetch verified contributions from Discord
-async function fetchVerifiedContributions() {
-    const url = `https://discord.com/api/v10/channels/${channelId}/messages`;
-
-    try {
-        const response = await fetch(url, {
-            headers: {
-                'Authorization': `Bot ${botToken}`
+        Array.from(challenges).forEach(function(challenge) {
+            const challengeTitle = challenge.getElementsByTagName('h3')[0].textContent.toLowerCase();
+            if (challengeTitle.includes(searchTerm)) {
+                challenge.style.display = '';
+            } else {
+                challenge.style.display = 'none';
             }
         });
-
-        const messages = await response.json();
-
-        // Filter messages that have the ✅ reaction
-        const verifiedContributions = messages.filter(message =>
-            message.reactions && message.reactions.some(reaction => reaction.emoji.name === '✅')
-        );
-
-        return verifiedContributions;
-
-    } catch (error) {
-        console.error('Error fetching contributions:', error);
-    }
-}
-
-// Function to display contributions on the website
-function displayContributions(contributions) {
-    const container = document.getElementById('contributions-container');
-    container.innerHTML = ''; // Clear the container
-
-    contributions.forEach(contribution => {
-        const card = document.createElement('div');
-        card.className = 'contribution-card';
-        card.innerHTML = `
-            <h3>${contribution.embeds[0].title}</h3>
-            <p>${contribution.embeds[0].description}</p>
-            ${contribution.embeds[0].fields[0] ? `<pre><code>${contribution.embeds[0].fields[0].value}</code></pre>` : ''}
-        `;
-        container.appendChild(card);
     });
-}
 
-// Fetch and display verified contributions on page load
-window.onload = async () => {
-    const contributions = await fetchVerifiedContributions();
-    displayContributions(contributions);
-};
+    // Event listener for clicking on a challenge
+    const challengeCards = document.querySelectorAll('.challenge-card');
+    const contributeForm = document.getElementById('contribute-form');
+    challengeCards.forEach(card => {
+        card.addEventListener('click', () => {
+            contributeForm.style.display = 'block';
+        });
+    });
+
+    // Example contribution submit handler
+    document.getElementById('submit-contribution').addEventListener('click', () => {
+        const title = document.getElementById('contribute-title').value;
+        const description = document.getElementById('contribute-description').value;
+        const code = document.getElementById('contribute-code').value;
+
+        // Decrypt the Webhook URL
+        const webhookUrl = decryptWebhookUrl(encryptedWebhookUrl);
+
+        const content = {
+            embeds: [
+                {
+                    title: title,
+                    description: description,
+                    fields: [
+                        {
+                            name: "Code",
+                            value: `\`\`\`${code}\`\`\``
+                        }
+                    ]
+                }
+            ]
+        };
+
+        fetch(webhookUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(content)
+        })
+        .then(() => alert("Contribution submitted! Please wait for admin verification."))
+        .catch(err => console.error("Error submitting contribution:", err));
+    });
+
+    // Admin Verification Functionality
+    async function verifyContribution(contributionId, reaction) {
+        if (reaction === "✅") {
+            // Logic to upload contribution to the site
+            console.log(`Contribution ${contributionId} verified and uploaded!`);
+            // Here, implement the logic to store the contribution data into your site's database or display it on the site.
+        }
+    }
+
+    // Fetch Discord User Data
+    function fetchDiscordUserData(token) {
+        fetch('https://discord.com/api/users/@me', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('username').textContent = data.username;
+            const profilePic = document.getElementById('profile-pic');
+            profilePic.src = `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png`;
+            profilePic.style.display = 'block';
+        })
+        .catch(err => console.error('Error fetching Discord data:', err));
+    }
+
+    // Get the token from URL fragment and fetch user data
+    window.addEventListener('load', () => {
+        const urlFragment = window.location.hash;
+        const token = new URLSearchParams(urlFragment.slice(1)).get('access_token');
+
+        if (token) {
+            fetchDiscordUserData(token);
+            document.getElementById('sign-in-btn').style.display = 'none';
+        }
+    });
+
 </script>
 
 </body>
