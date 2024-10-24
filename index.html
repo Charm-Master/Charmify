@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Charmify Challenges</title>
+    <title>Charmify Coding Challenges</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,6 +16,7 @@
             color: white;
             padding: 10px;
             text-align: center;
+            position: relative;
         }
         .container {
             padding: 20px;
@@ -26,11 +27,12 @@
             padding: 15px;
             margin-bottom: 15px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
         }
         .challenge-card h3 {
             margin-top: 0;
         }
-        .join-btn {
+        .sign-in-btn {
             display: block;
             width: 200px;
             margin: 20px auto;
@@ -41,8 +43,17 @@
             text-decoration: none;
             border-radius: 5px;
         }
-        .join-btn:hover {
+        .sign-in-btn:hover {
             background-color: #5865f2;
+        }
+        .profile-pic {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: none; /* Hidden until login */
         }
         .search-bar {
             width: 100%;
@@ -51,19 +62,55 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+        .contribute-form {
+            display: none; /* Hidden until a challenge is clicked */
+            background-color: white;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #7289da;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #5865f2;
+        }
     </style>
 </head>
 <body>
 
 <header>
     <h1>Charmify Coding Challenges</h1>
+    <!-- Discord Profile Picture -->
+    <img src="" id="profile-pic" class="profile-pic" alt="Profile Picture">
 </header>
 
 <div class="container">
 
     <!-- Discord Login Button -->
-    <a class="join-btn" href="https://discord.com/api/oauth2/authorize?client_id=1298942705463722037&redirect_uri=https%3A%2F%2Fcharm-master.github.io%2FCharmify&response_type=code&scope=identify">
-        Join with Discord
+    <a class="sign-in-btn" id="sign-in-btn" href="https://discord.com/api/oauth2/authorize?client_id=1298942705463722037&redirect_uri=https%3A%2F%2Fcharm-master.github.io%2FCharmify&response_type=code&scope=identify">
+        Sign in with Discord
     </a>
 
     <!-- Search Bar -->
@@ -71,20 +118,43 @@
 
     <!-- Challenges List -->
     <div id="challenges-container">
-        <div class="challenge-card">
+        <div class="challenge-card" data-id="1">
             <h3>Challenge 1: Build a Website</h3>
             <p>Create a simple HTML and CSS website that has at least 3 pages and a navigation bar.</p>
         </div>
-        <div class="challenge-card">
+        <div class="challenge-card" data-id="2">
             <h3>Challenge 2: JavaScript Calculator</h3>
             <p>Build a basic calculator using HTML, CSS, and JavaScript. It should support addition, subtraction, multiplication, and division.</p>
         </div>
-        <!-- Add more challenges here -->
+        <!-- More challenges can be added -->
+    </div>
+
+    <!-- Contribute Form -->
+    <div class="contribute-form" id="contribute-form">
+        <h2>Contribute to Challenge</h2>
+        <input type="text" id="contribute-title" placeholder="Title">
+        <textarea id="contribute-description" placeholder="Description"></textarea>
+        <textarea id="contribute-code" placeholder="Add your code here..."></textarea>
+        <button id="submit-contribution">Submit</button>
     </div>
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
 <script>
+    // Encryption Key (keep this secret and safe)
+    const encryptionKey = "wZx2AjL2DdHtb62Ej7YVf5Q0W3WBTRLV5FB76Z2XKHA=";
+
+    // Encrypted Webhook URL
+    const encryptedWebhookUrl = "b'gAAAAABnGh2HVF_hfzNtYJp07ZSK3rjG3GfJl9NjepLBy1OGlyg9b0dVCrsJsZ96Nard0OVC7DbEiowCaThFsmVGvDpZlOL9U494hWHoi_si1Jd1ijzKN-P83diuHIovMxvt9UF_b527U1j6Ee5L7tR3-w7LAdftQ-OX4iCZyhdzWMRzgYd8csF5q9ZxAj2WhA62xxO4ZmUaLniqEphiYlR4xm-kk2HvowDdu6ffOe-F-pfh_WpHjlo='";
+
+    // Decrypting the Webhook URL
+    function decryptWebhookUrl(encryptedUrl) {
+        const decrypted = CryptoJS.AES.decrypt(encryptedUrl, encryptionKey);
+        return decrypted.toString(CryptoJS.enc.Utf8);
+    }
+
+    // Event listener for search bar
     document.getElementById('search-bar').addEventListener('input', function() {
         const searchTerm = this.value.toLowerCase();
         const challenges = document.getElementsByClassName('challenge-card');
@@ -98,6 +168,69 @@
             }
         });
     });
+
+    // Event listener for clicking on a challenge
+    const challengeCards = document.querySelectorAll('.challenge-card');
+    const contributeForm = document.getElementById('contribute-form');
+    challengeCards.forEach(card => {
+        card.addEventListener('click', () => {
+            contributeForm.style.display = 'block';
+        });
+    });
+
+    // Example contribution submit handler
+    document.getElementById('submit-contribution').addEventListener('click', () => {
+        const title = document.getElementById('contribute-title').value;
+        const description = document.getElementById('contribute-description').value;
+        const code = document.getElementById('contribute-code').value;
+
+        // Decrypt the Webhook URL
+        const webhookUrl = decryptWebhookUrl(encryptedWebhookUrl);
+
+        const content = {
+            embeds: [
+                {
+                    title: title,
+                    description: description,
+                    fields: [
+                        {
+                            name: "Code",
+                            value: `\`\`\`${code}\`\`\``
+                        }
+                    ]
+                }
+            ]
+        };
+
+        fetch(webhookUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(content)
+        })
+        .then(() => alert("Contribution submitted!"))
+        .catch(err => console.error("Error submitting contribution:", err));
+    });
+
+    // Function to handle Discord login and fetch user data
+    function fetchDiscordUserData() {
+        // Assuming you have OAuth token stored after login
+        fetch('https://discord.com/api/users/@me', {
+            headers: {
+                'Authorization': 'Bearer YOUR_ACCESS_TOKEN'  // Replace with actual token
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Show profile picture and hide sign-in button
+            const profilePic = document.getElementById('profile-pic');
+            profilePic.src = `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png`;
+            profilePic.style.display = 'block';
+            document.getElementById('sign-in-btn').style.display = 'none';
+        })
+        .catch(err => console.error("Error fetching user data:", err));
+    }
 </script>
 
 </body>
