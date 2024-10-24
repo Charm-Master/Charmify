@@ -7,108 +7,131 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
             margin: 0;
             padding: 0;
-            color: #2c3e50;
+            background-color: #f0f0f0;
         }
+
         header {
-            background-color: #2c3e50;
+            background-color: #4CAF50;
             color: white;
             padding: 10px;
             text-align: center;
-            position: relative;
         }
-        h1 {
-            margin: 0;
-        }
+
         .container {
-            padding: 20px;
+            margin: 20px;
         }
+
+        .nav {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .nav button {
+            padding: 10px 20px;
+            background-color: #7289DA;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+
+        .nav button:hover {
+            background-color: #5a72b1;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
         .challenge-card {
             background-color: white;
             border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            padding: 15px;
             cursor: pointer;
+            transition: transform 0.2s;
         }
+
         .challenge-card:hover {
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+            transform: scale(1.02);
         }
-        .challenge-card h3 {
+
+        h3 {
             margin-top: 0;
         }
-        .sign-in-btn {
-            display: block;
-            width: 250px;
-            margin: 20px auto;
-            padding: 15px;
-            text-align: center;
-            background-color: #7289da;
+
+        .profile-pic {
+            border-radius: 50%;
+            height: 40px;
+            width: 40px;
+        }
+
+        .username {
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        #sign-in-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #7289DA;
             color: white;
             text-decoration: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
+            border-radius: 4px;
         }
-        .sign-in-btn:hover {
-            background-color: #5865f2;
+
+        #sign-in-btn:hover {
+            background-color: #5a72b1;
         }
-        .profile-pic {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: none;
-            border: 2px solid #7289da;
-        }
-        .username {
-            position: absolute;
-            top: 12px;
-            right: 70px;
-            color: white;
-            font-weight: bold;
-        }
-        .search-bar {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        .contribute-form {
-            display: none;
+
+        .contribution {
             background-color: white;
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
-        textarea, input[type="text"] {
+
+        #contribute-form {
+            margin-top: 20px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        textarea {
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
-            border-radius: 5px;
             border: 1px solid #ccc;
-            font-size: 16px;
+            border-radius: 4px;
+            resize: none;
         }
+
         button {
-            padding: 12px 20px;
-            background-color: #7289da;
+            padding: 10px 20px;
+            background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 16px;
         }
+
         button:hover {
-            background-color: #5865f2;
+            background-color: #45a049;
+        }
+
+        #challenge-page {
+            display: none;
         }
     </style>
 </head>
@@ -121,6 +144,10 @@
 </header>
 
 <div class="container">
+    <!-- Navigation -->
+    <div class="nav">
+        <button id="home-btn">Home</button>
+    </div>
 
     <!-- Discord Login Button -->
     <a class="sign-in-btn" id="sign-in-btn" href="https://discord.com/api/oauth2/authorize?client_id=1298942705463722037&redirect_uri=https://charm-master.github.io/Charmify&response_type=token&scope=identify">
@@ -142,105 +169,59 @@
         </div>
     </div>
 
-    <!-- Contribute Form -->
-    <div class="contribute-form" id="contribute-form">
-        <h2>Contribute to Challenge</h2>
-        <input type="text" id="contribute-title" placeholder="Title">
-        <textarea id="contribute-description" placeholder="Description"></textarea>
-        <textarea id="contribute-code" placeholder="Add your code here..."></textarea>
-        <button id="submit-contribution">Submit</button>
-    </div>
+    <!-- Challenge Page -->
+    <div id="challenge-page">
+        <h2 id="challenge-title"></h2>
+        <p id="challenge-details"></p>
+        <h3>Contributions</h3>
+        <div id="contributions-container"></div>
 
+        <!-- Add Contribution Form (only visible when signed in) -->
+        <div id="contribute-form" style="display: none;">
+            <h3>Add Contribution</h3>
+            <textarea id="contribute-description" placeholder="Add your description..."></textarea>
+            <textarea id="contribute-code" placeholder="Add your code..."></textarea>
+            <button id="submit-contribution">Submit</button>
+        </div>
+    </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
 <script>
-    // Encryption Key (keep this secret and safe)
-    const encryptionKey = "wZx2AjL2DdHtb62Ej7YVf5Q0W3WBTRLV5FB76Z2XKHA=";
+    // Data for challenges
+    const challengeData = {
+        1: { title: 'Build a Website', description: 'Create a simple HTML and CSS website with 3 pages and a navbar.' },
+        2: { title: 'JavaScript Calculator', description: 'Build a calculator using HTML, CSS, and JavaScript.' }
+    };
 
-    // Encrypted Webhook URL (Base64 encoded string)
-    const encryptedWebhookUrl = "b'gAAAAABnGh2HVF_hfzNtYJp07ZSK3rjG3GfJl9NjepLBy1OGlyg9b0dVCrsJsZ96Nard0OVC7DbEiowCaThFsmVGvDpZlOL9U494hWHoi_si1Jd1ijzKN-P83diuHIovMxvt9UF_b527U1j6Ee5L7tR3-w7LAdftQ-OX4iCZyhdzWMRzgYd8csF5q9ZxAj2WhA62xxO4ZmUaLniqEphiYlR4xm-kk2HvowDdu6ffOe-F-pfh_WpHjlo='";
+    // Contributions data structure to store contributions specific to each challenge
+    const contributionsData = {
+        1: [],
+        2: []
+    };
 
-    // Decrypting the Webhook URL
-    function decryptWebhookUrl(encryptedUrl) {
-        const decrypted = CryptoJS.AES.decrypt(atob(encryptedUrl), encryptionKey);
-        return decrypted.toString(CryptoJS.enc.Utf8);
-    }
-
-    // Event listener for search bar
-    document.getElementById('search-bar').addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        const challenges = document.getElementsByClassName('challenge-card');
-
-        Array.from(challenges).forEach(function(challenge) {
-            const challengeTitle = challenge.getElementsByTagName('h3')[0].textContent.toLowerCase();
-            if (challengeTitle.includes(searchTerm)) {
-                challenge.style.display = '';
-            } else {
-                challenge.style.display = 'none';
-            }
+    // Function to handle clicking on a challenge and navigating to the challenge page
+    document.querySelectorAll('.challenge-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const challengeId = this.getAttribute('data-id');
+            showChallengePage(challengeId);
         });
     });
 
-    // Event listener for clicking on a challenge
-    const challengeCards = document.querySelectorAll('.challenge-card');
-    const contributeForm = document.getElementById('contribute-form');
-    challengeCards.forEach(card => {
-        card.addEventListener('click', () => {
-            contributeForm.style.display = 'block';
-        });
-    });
+    function showChallengePage(challengeId) {
+        document.getElementById('challenges-container').style.display = 'none';
+        const challengePage = document.getElementById('challenge-page');
+        challengePage.style.display = 'block';
 
-    // Example contribution submit handler
-    document.getElementById('submit-contribution').addEventListener('click', () => {
-        const title = document.getElementById('contribute-title').value;
-        const description = document.getElementById('contribute-description').value;
-        const code = document.getElementById('contribute-code').value;
+        document.getElementById('challenge-title').textContent = challengeData[challengeId].title;
+        document.getElementById('challenge-details').textContent = challengeData[challengeId].description;
 
-        // Decrypt the Webhook URL
-        const webhookUrl = decryptWebhookUrl(encryptedWebhookUrl);
-
-        const content = {
-            embeds: [
-                {
-                    title: title,
-                    description: description,
-                    fields: [
-                        {
-                            name: "Code",
-                            value: `\`\`\`${code}\`\`\``
-                        }
-                    ]
-                }
-            ]
-        };
-
-        fetch(webhookUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(content)
-        })
-        .then(() => alert("Contribution submitted! Please wait for admin verification."))
-        .catch(err => console.error("Error submitting contribution:", err));
-    });
-
-    // Admin Verification Functionality
-    async function verifyContribution(contributionId, reaction) {
-        if (reaction === "✅") {
-            // Logic to upload contribution to the site
-            console.log(`Contribution ${contributionId} verified and uploaded!`);
-            // Here, implement the logic to store the contribution data into your site's database or display it on the site.
-        }
+        fetchApprovedContributions(challengeId);
     }
 
-    // Fetch Discord User Data
+    // Fetch Discord user data if token is available
     function fetchDiscordUserData(token) {
         fetch('https://discord.com/api/users/@me', {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+            headers: { Authorization: `Bearer ${token}` }
         })
         .then(response => response.json())
         .then(data => {
@@ -248,11 +229,12 @@
             const profilePic = document.getElementById('profile-pic');
             profilePic.src = `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png`;
             profilePic.style.display = 'block';
+            document.getElementById('contribute-form').style.display = 'block';
         })
         .catch(err => console.error('Error fetching Discord data:', err));
     }
 
-    // Get the token from URL fragment and fetch user data
+    // Check if the user is signed in
     window.addEventListener('load', () => {
         const urlFragment = window.location.hash;
         const token = new URLSearchParams(urlFragment.slice(1)).get('access_token');
@@ -263,7 +245,50 @@
         }
     });
 
-</script>
+    // Fetch approved contributions from the specific challenge
+    function fetchApprovedContributions(challengeId) {
+        const contributionsContainer = document.getElementById('contributions-container');
+        contributionsContainer.innerHTML = '';
 
+        contributionsData[challengeId].forEach(contribution => {
+            const contributionDiv = document.createElement('div');
+            contributionDiv.classList.add('contribution');
+
+            contributionDiv.innerHTML = `
+                <p><strong>${contribution.username}</strong>:</p>
+                <p>${contribution.description}</p>
+                <pre>${contribution.code}</pre>
+            `;
+
+            contributionsContainer.appendChild(contributionDiv);
+        });
+    }
+
+    // Handle contribution submission
+    document.getElementById('submit-contribution').addEventListener('click', () => {
+        const description = document.getElementById('contribute-description').value;
+        const code = document.getElementById('contribute-code').value;
+        const challengeId = document.getElementById('challenge-title').textContent === challengeData[1].title ? 1 : 2;
+
+        const contribution = {
+            username: document.getElementById('username').textContent,
+            description,
+            code
+        };
+
+        contributionsData[challengeId].push(contribution);
+        fetchApprovedContributions(challengeId);
+
+        // Clear input fields
+        document.getElementById('contribute-description').value = '';
+        document.getElementById('contribute-code').value = '';
+    });
+
+    // Navigate back to the challenges list
+    document.getElementById('home-btn').addEventListener('click', () => {
+        document.getElementById('challenge-page').style.display = 'none';
+        document.getElementById('challenges-container').style.display = 'block';
+    });
+</script>
 </body>
 </html>
