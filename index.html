@@ -10,6 +10,7 @@
             background-color: #f0f0f0;
             margin: 0;
             padding: 0;
+            color: #2c3e50;
         }
         header {
             background-color: #2c3e50;
@@ -18,30 +19,40 @@
             text-align: center;
             position: relative;
         }
+        h1 {
+            margin: 0;
+        }
         .container {
             padding: 20px;
         }
         .challenge-card {
             background-color: white;
             border-radius: 8px;
-            padding: 15px;
+            padding: 20px;
             margin-bottom: 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
             cursor: pointer;
+        }
+        .challenge-card:hover {
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
         }
         .challenge-card h3 {
             margin-top: 0;
         }
         .sign-in-btn {
             display: block;
-            width: 200px;
+            width: 250px;
             margin: 20px auto;
-            padding: 10px;
+            padding: 15px;
             text-align: center;
             background-color: #7289da;
             color: white;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
         }
         .sign-in-btn:hover {
             background-color: #5865f2;
@@ -50,48 +61,51 @@
             position: absolute;
             top: 10px;
             right: 10px;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            display: none; /* Hidden until login */
+            display: none;
+            border: 2px solid #7289da;
+        }
+        .username {
+            position: absolute;
+            top: 12px;
+            right: 70px;
+            color: white;
+            font-weight: bold;
         }
         .search-bar {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 20px;
             border: 1px solid #ccc;
             border-radius: 5px;
+            font-size: 16px;
         }
         .contribute-form {
-            display: none; /* Hidden until a challenge is clicked */
+            display: none;
             background-color: white;
             padding: 20px;
             margin-top: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        textarea {
-            width: 100%;
-            height: 100px;
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-        input[type="text"] {
+        textarea, input[type="text"] {
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 5px;
             border: 1px solid #ccc;
+            font-size: 16px;
         }
         button {
-            padding: 10px 20px;
+            padding: 12px 20px;
             background-color: #7289da;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
         }
         button:hover {
             background-color: #5865f2;
@@ -102,14 +116,14 @@
 
 <header>
     <h1>Charmify Coding Challenges</h1>
-    <!-- Discord Profile Picture -->
+    <span class="username" id="username"></span>
     <img src="" id="profile-pic" class="profile-pic" alt="Profile Picture">
 </header>
 
 <div class="container">
 
     <!-- Discord Login Button -->
-    <a class="sign-in-btn" id="sign-in-btn" href="https://discord.com/api/oauth2/authorize?client_id=1298942705463722037&redirect_uri=https%3A%2F%2Fcharm-master.github.io%2FCharmify&response_type=code&scope=identify">
+    <a class="sign-in-btn" id="sign-in-btn" href="https://discord.com/api/oauth2/authorize?client_id=1298942705463722037&redirect_uri=https://charm-master.github.io/Charmify&response_type=token&scope=identify">
         Sign in with Discord
     </a>
 
@@ -126,7 +140,6 @@
             <h3>Challenge 2: JavaScript Calculator</h3>
             <p>Build a basic calculator using HTML, CSS, and JavaScript. It should support addition, subtraction, multiplication, and division.</p>
         </div>
-        <!-- More challenges can be added -->
     </div>
 
     <!-- Contribute Form -->
@@ -215,22 +228,28 @@
 
     // Function to handle Discord login and fetch user data
     function fetchDiscordUserData() {
-        // Assuming you have OAuth token stored after login
-        fetch('https://discord.com/api/users/@me', {
-            headers: {
-                'Authorization': 'Bearer YOUR_ACCESS_TOKEN'  // Replace with actual token
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Show profile picture and hide sign-in button
-            const profilePic = document.getElementById('profile-pic');
-            profilePic.src = `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png`;
-            profilePic.style.display = 'block';
-            document.getElementById('sign-in-btn').style.display = 'none';
-        })
-        .catch(err => console.error("Error fetching user data:", err));
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get('access_token');
+
+        if (accessToken) {
+            fetch('https://discord.com/api/users/@me', {
+                headers: {
+                    'Authorization': 'Bearer ' + accessToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('username').textContent = data.username;
+                document.getElementById('profile-pic').src = `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png`;
+                document.getElementById('profile-pic').style.display = 'block';
+                document.getElementById('sign-in-btn').style.display = 'none';
+            })
+            .catch(error => console.error('Error fetching user data:', error));
+        }
     }
+
+    // Call the function on page load to check if user is logged in
+    window.onload = fetchDiscordUserData;
 </script>
 
 </body>
