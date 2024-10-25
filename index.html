@@ -5,134 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Charmify Coding Challenges</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-        }
-
-        header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px;
-            text-align: center;
-        }
-
-        .container {
-            margin: 20px;
-        }
-
-        .nav {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .nav button {
-            padding: 10px 20px;
-            background-color: #7289DA;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 0 10px;
-        }
-
-        .nav button:hover {
-            background-color: #5a72b1;
-        }
-
-        .search-bar {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-        }
-
-        .challenge-card {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            padding: 15px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .challenge-card:hover {
-            transform: scale(1.02);
-        }
-
-        h3 {
-            margin-top: 0;
-        }
-
-        .profile-pic {
-            border-radius: 50%;
-            height: 40px;
-            width: 40px;
-        }
-
-        .username {
-            margin-left: 10px;
-            font-weight: bold;
-        }
-
-        #sign-in-btn {
-            display: inline-block;
-            margin-bottom: 20px;
-            padding: 10px 20px;
-            background-color: #7289DA;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-
-        #sign-in-btn:hover {
-            background-color: #5a72b1;
-        }
-
-        .contribution {
-            background-color: white;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        #contribute-form {
-            margin-top: 20px;
-            background-color: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            resize: none;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        #challenge-page {
-            display: none;
-        }
+        /* Existing styles */
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f0f0f0; }
+        header { background-color: #4CAF50; color: white; padding: 10px; text-align: center; }
+        .container { margin: 20px; }
+        .nav { display: flex; justify-content: center; margin-bottom: 20px; }
+        .nav button { padding: 10px 20px; background-color: #7289DA; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 0 10px; }
+        .nav button:hover { background-color: #5a72b1; }
+        .search-bar { width: 100%; padding: 10px; margin-bottom: 20px; }
+        .challenge-card { background-color: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); margin-bottom: 20px; padding: 15px; cursor: pointer; transition: transform 0.2s; }
+        .challenge-card:hover { transform: scale(1.02); }
+        h3 { margin-top: 0; }
+        .profile-pic { border-radius: 50%; height: 40px; width: 40px; }
+        .username { margin-left: 10px; font-weight: bold; }
+        #sign-in-btn { display: inline-block; margin-bottom: 20px; padding: 10px 20px; background-color: #7289DA; color: white; text-decoration: none; border-radius: 4px; }
+        #sign-in-btn:hover { background-color: #5a72b1; }
+        .contribution { background-color: white; padding: 10px; margin-bottom: 10px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
+        #contribute-form { margin-top: 20px; background-color: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
+        textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; resize: none; }
+        button { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+        #challenge-page { display: none; }
     </style>
 </head>
 <body>
@@ -193,10 +86,10 @@
         2: { title: 'JavaScript Calculator', description: 'Build a calculator using HTML, CSS, and JavaScript.' }
     };
 
-    // Contributions data structure to store contributions specific to each challenge
+    // Contributions data structure for pending and approved contributions
     const contributionsData = {
-        1: [],
-        2: []
+        1: { pending: [], approved: [] },
+        2: { pending: [], approved: [] }
     };
 
     // Function to handle clicking on a challenge and navigating to the challenge page
@@ -218,39 +111,12 @@
         fetchApprovedContributions(challengeId);
     }
 
-    // Fetch Discord user data if token is available
-    function fetchDiscordUserData(token) {
-        fetch('https://discord.com/api/users/@me', {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('username').textContent = data.username;
-            const profilePic = document.getElementById('profile-pic');
-            profilePic.src = `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png`;
-            profilePic.style.display = 'block';
-            document.getElementById('contribute-form').style.display = 'block';
-        })
-        .catch(err => console.error('Error fetching Discord data:', err));
-    }
-
-    // Check if the user is signed in
-    window.addEventListener('load', () => {
-        const urlFragment = window.location.hash;
-        const token = new URLSearchParams(urlFragment.slice(1)).get('access_token');
-
-        if (token) {
-            fetchDiscordUserData(token);
-            document.getElementById('sign-in-btn').style.display = 'none';
-        }
-    });
-
-    // Fetch approved contributions from the specific challenge
+    // Fetch approved contributions
     function fetchApprovedContributions(challengeId) {
         const contributionsContainer = document.getElementById('contributions-container');
         contributionsContainer.innerHTML = '';
 
-        contributionsData[challengeId].forEach(contribution => {
+        contributionsData[challengeId].approved.forEach(contribution => {
             const contributionDiv = document.createElement('div');
             contributionDiv.classList.add('contribution');
 
@@ -264,7 +130,7 @@
         });
     }
 
-    // Handle contribution submission
+    // Handle contribution submission (adding to pending list)
     document.getElementById('submit-contribution').addEventListener('click', () => {
         const description = document.getElementById('contribute-description').value;
         const code = document.getElementById('contribute-code').value;
@@ -276,19 +142,42 @@
             code
         };
 
-        contributionsData[challengeId].push(contribution);
-        fetchApprovedContributions(challengeId);
+        contributionsData[challengeId].pending.push(contribution);
 
-        // Clear input fields
         document.getElementById('contribute-description').value = '';
         document.getElementById('contribute-code').value = '';
+
+        alert("Contribution submitted and awaiting approval.");
     });
 
-    // Navigate back to the challenges list
-    document.getElementById('home-btn').addEventListener('click', () => {
-        document.getElementById('challenge-page').style.display = 'none';
-        document.getElementById('challenges-container').style.display = 'block';
-    });
+    // Simulate approving a contribution by moving it from pending to approved (useful in a real app if linked to a backend)
+    function approveContribution(challengeId, index) {
+        const contribution = contributionsData[challengeId].pending.splice(index, 1)[0];
+        contributionsData[challengeId].approved.push(contribution);
+        fetchApprovedContributions(challengeId);
+    }
+
+    // Fetch Discord user data if token is available
+    function fetchDiscordUserData(token) {
+        fetch('https://discord.com/api/users/@me', {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('username').textContent = data.username;
+            const profilePic = document.getElementById('profile-pic');
+            profilePic.src = `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png`;
+            profilePic.style.display = 'block';
+            document.getElementById('contribute-form').style.display = 'block';
+            document.getElementById('sign-in-btn').style.display = 'none';
+        });
+    }
+
+    // Capture access token from URL
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+    const token = params.get('access_token');
+    if (token) fetchDiscordUserData(token);
 </script>
 </body>
 </html>
