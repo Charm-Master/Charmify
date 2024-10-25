@@ -3,181 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Charmify Coding Challenges</title>
+    <title>Coding Challenge Portal</title>
     <style>
-        /* Existing styles */
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f0f0f0; }
-        header { background-color: #4CAF50; color: white; padding: 10px; text-align: center; }
-        .container { margin: 20px; }
-        .nav { display: flex; justify-content: center; margin-bottom: 20px; }
-        .nav button { padding: 10px 20px; background-color: #7289DA; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 0 10px; }
-        .nav button:hover { background-color: #5a72b1; }
-        .search-bar { width: 100%; padding: 10px; margin-bottom: 20px; }
-        .challenge-card { background-color: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); margin-bottom: 20px; padding: 15px; cursor: pointer; transition: transform 0.2s; }
-        .challenge-card:hover { transform: scale(1.02); }
-        h3 { margin-top: 0; }
-        .profile-pic { border-radius: 50%; height: 40px; width: 40px; }
-        .username { margin-left: 10px; font-weight: bold; }
-        #sign-in-btn { display: inline-block; margin-bottom: 20px; padding: 10px 20px; background-color: #7289DA; color: white; text-decoration: none; border-radius: 4px; }
-        #sign-in-btn:hover { background-color: #5a72b1; }
-        .contribution { background-color: white; padding: 10px; margin-bottom: 10px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
-        #contribute-form { margin-top: 20px; background-color: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
-        textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; resize: none; }
-        button { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #45a049; }
-        #challenge-page { display: none; }
+        /* Add your styles here */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            color: #333;
+            transition: background 0.5s ease;
+        }
+        /* Additional styles... */
+        .admin-button {
+            display: none; /* Hidden by default */
+            background-color: #ff5722;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .contribution {
+            position: relative;
+            border: 1px solid #ccc;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .delete-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-
-<header>
-    <h1>Charmify Coding Challenges</h1>
-    <span class="username" id="username"></span>
-    <img src="" id="profile-pic" class="profile-pic" alt="Profile Picture">
-</header>
-
-<div class="container">
-    <!-- Navigation -->
-    <div class="nav">
+    <div id="header">
+        <h1>Coding Challenges</h1>
+        <div id="profile">
+            <img id="profile-pic" src="" alt="Profile Picture" style="display:none; width:40px; height:40px; border-radius: 50%;">
+            <span id="username"></span>
+        </div>
         <button id="home-btn">Home</button>
     </div>
 
-    <!-- Discord Login Button -->
-    <a class="sign-in-btn" id="sign-in-btn" href="https://discord.com/api/oauth2/authorize?client_id=1298942705463722037&redirect_uri=https://charm-master.github.io/Charmify&response_type=token&scope=identify">
-        Sign in with Discord
-    </a>
-
-    <!-- Search Bar -->
-    <input type="text" class="search-bar" id="search-bar" placeholder="Search for challenges...">
-
-    <!-- Challenges List -->
     <div id="challenges-container">
-        <div class="challenge-card" data-id="1">
-            <h3>Challenge 1: Build a Website</h3>
-            <p>Create a simple HTML and CSS website that has at least 3 pages and a navigation bar.</p>
-        </div>
-        <div class="challenge-card" data-id="2">
-            <h3>Challenge 2: JavaScript Calculator</h3>
-            <p>Build a basic calculator using HTML, CSS, and JavaScript. It should support addition, subtraction, multiplication, and division.</p>
-        </div>
+        <!-- Challenge cards will be populated here -->
     </div>
 
-    <!-- Challenge Page -->
-    <div id="challenge-page">
+    <div id="challenge-page" style="display: none;">
         <h2 id="challenge-title"></h2>
         <p id="challenge-details"></p>
-        <h3>Contributions</h3>
         <div id="contributions-container"></div>
-
-        <!-- Add Contribution Form (only visible when signed in) -->
         <div id="contribute-form" style="display: none;">
-            <h3>Add Contribution</h3>
-            <textarea id="contribute-description" placeholder="Add your description..."></textarea>
-            <textarea id="contribute-code" placeholder="Add your code..."></textarea>
-            <button id="submit-contribution">Submit</button>
+            <textarea id="contribute-description" placeholder="Describe your contribution"></textarea>
+            <textarea id="contribute-code" placeholder="Your code here"></textarea>
+            <button id="submit-contribution">Submit Contribution</button>
+        </div>
+        <button id="admin-button" class="admin-button">Add User as Admin</button>
+        <div id="add-user-form" style="display:none;">
+            <input type="text" id="new-admin-username" placeholder="Enter username">
+            <button id="submit-new-admin">Submit</button>
         </div>
     </div>
-</div>
 
-<script>
-    // Data for challenges
-    const challengeData = {
-        1: { title: 'Build a Website', description: 'Create a simple HTML and CSS website with 3 pages and a navbar.' },
-        2: { title: 'JavaScript Calculator', description: 'Build a calculator using HTML, CSS, and JavaScript.' }
-    };
-
-    // Contributions data structure for pending and approved contributions
-    const contributionsData = {
-        1: { pending: [], approved: [] },
-        2: { pending: [], approved: [] }
-    };
-
-    // Function to handle clicking on a challenge and navigating to the challenge page
-    document.querySelectorAll('.challenge-card').forEach(card => {
-        card.addEventListener('click', function() {
-            const challengeId = this.getAttribute('data-id');
-            showChallengePage(challengeId);
-        });
-    });
-
-    function showChallengePage(challengeId) {
-        document.getElementById('challenges-container').style.display = 'none';
-        const challengePage = document.getElementById('challenge-page');
-        challengePage.style.display = 'block';
-
-        document.getElementById('challenge-title').textContent = challengeData[challengeId].title;
-        document.getElementById('challenge-details').textContent = challengeData[challengeId].description;
-
-        fetchApprovedContributions(challengeId);
-    }
-
-    // Fetch approved contributions
-    function fetchApprovedContributions(challengeId) {
-        const contributionsContainer = document.getElementById('contributions-container');
-        contributionsContainer.innerHTML = '';
-
-        contributionsData[challengeId].approved.forEach(contribution => {
-            const contributionDiv = document.createElement('div');
-            contributionDiv.classList.add('contribution');
-
-            contributionDiv.innerHTML = `
-                <p><strong>${contribution.username}</strong>:</p>
-                <p>${contribution.description}</p>
-                <pre>${contribution.code}</pre>
-            `;
-
-            contributionsContainer.appendChild(contributionDiv);
-        });
-    }
-
-    // Handle contribution submission (adding to pending list)
-    document.getElementById('submit-contribution').addEventListener('click', () => {
-        const description = document.getElementById('contribute-description').value;
-        const code = document.getElementById('contribute-code').value;
-        const challengeId = document.getElementById('challenge-title').textContent === challengeData[1].title ? 1 : 2;
-
-        const contribution = {
-            username: document.getElementById('username').textContent,
-            description,
-            code
+    <script>
+        const contributionsData = {
+            // Sample contributions data structure
+            "challenge1": {
+                approved: [],
+                pending: []
+            }
         };
 
-        contributionsData[challengeId].pending.push(contribution);
+        const userAdmin = "hydraulic_bolt_46520"; // Admin username
 
-        document.getElementById('contribute-description').value = '';
-        document.getElementById('contribute-code').value = '';
+        // Function to display contributions
+        const displayContributions = (challengeId) => {
+            const contributionsContainer = document.getElementById('contributions-container');
+            contributionsContainer.innerHTML = '';
+            contributionsData[challengeId].approved.forEach(contribution => {
+                const contributionDiv = document.createElement('div');
+                contributionDiv.classList.add('contribution');
+                contributionDiv.innerHTML = `<strong>${contribution.username}</strong>: ${contribution.description} <pre>${contribution.code}</pre>`;
 
-        alert("Contribution submitted and awaiting approval.");
-    });
+                // Admin-only delete button
+                if (document.getElementById('username').innerText === userAdmin) {
+                    const deleteButton = document.createElement('button');
+                    deleteButton.classList.add('delete-button');
+                    deleteButton.innerText = 'X';
+                    deleteButton.onclick = () => {
+                        if (confirm("Are you sure you want to delete this contribution?")) {
+                            contributionsData[challengeId].approved = contributionsData[challengeId].approved.filter(c => c.username !== contribution.username);
+                            displayContributions(challengeId); // Refresh contributions
+                        }
+                    };
+                    contributionDiv.appendChild(deleteButton);
+                }
 
-    // Simulate approving a contribution by moving it from pending to approved (useful in a real app if linked to a backend)
-    function approveContribution(challengeId, index) {
-        const contribution = contributionsData[challengeId].pending.splice(index, 1)[0];
-        contributionsData[challengeId].approved.push(contribution);
-        fetchApprovedContributions(challengeId);
-    }
+                contributionsContainer.appendChild(contributionDiv);
+            });
+        };
 
-    // Fetch Discord user data if token is available
-    function fetchDiscordUserData(token) {
-        fetch('https://discord.com/api/users/@me', {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('username').textContent = data.username;
-            const profilePic = document.getElementById('profile-pic');
-            profilePic.src = `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png`;
-            profilePic.style.display = 'block';
-            document.getElementById('contribute-form').style.display = 'block';
-            document.getElementById('sign-in-btn').style.display = 'none';
+        // Handle sign-in and display username and profile picture
+        const setUsernameAndPicture = (username, profilePic) => {
+            document.getElementById('username').innerText = username;
+            document.getElementById('profile-pic').src = profilePic;
+            document.getElementById('profile-pic').style.display = 'inline';
+
+            // Show admin button if logged in as admin
+            if (username === userAdmin) {
+                document.getElementById('admin-button').style.display = 'block';
+            }
+        };
+
+        // Handle admin user addition
+        document.getElementById('admin-button').addEventListener('click', () => {
+            document.getElementById('add-user-form').style.display = 'block';
         });
-    }
 
-    // Capture access token from URL
-    const hash = window.location.hash.substring(1);
-    const params = new URLSearchParams(hash);
-    const token = params.get('access_token');
-    if (token) fetchDiscordUserData(token);
-</script>
+        document.getElementById('submit-new-admin').addEventListener('click', () => {
+            const newUsername = document.getElementById('new-admin-username').value;
+            // Logic to add the new admin user (this should be implemented server-side)
+            alert(`User ${newUsername} added as admin!`); // Placeholder for confirmation
+            document.getElementById('new-admin-username').value = ''; // Clear input
+        });
+
+        // Submit contribution functionality
+        document.getElementById('submit-contribution').addEventListener('click', () => {
+            const description = document.getElementById('contribute-description').value;
+            const code = document.getElementById('contribute-code').value;
+            const challengeId = document.getElementById('challenge-title').innerText.split(':')[0];
+
+            // Save contribution as pending
+            contributionsData[challengeId].pending.push({
+                username: document.getElementById('username').innerText,
+                description: description,
+                code: code
+            });
+
+            // Reset contribution fields
+            document.getElementById('contribute-description').value = '';
+            document.getElementById('contribute-code').value = '';
+
+            alert('Contribution submitted! It will be reviewed shortly.');
+        });
+
+        // Home button functionality to navigate back
+        document.getElementById('home-btn').addEventListener('click', () => {
+            document.getElementById('challenge-page').style.display = 'none';
+            document.getElementById('challenges-container').style.display = 'block';
+        });
+
+        // Simulate setting user info on sign-in
+        setUsernameAndPicture('hydraulic_bolt_46520', 'https://example.com/user123.jpg'); // Replace with actual Discord API call
+
+    </script>
 </body>
 </html>
